@@ -3,7 +3,7 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-# إعداد السجلات لمراقبة أداء البوت في Railway
+# إعداد السجلات لمتابعة البوت
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # التوكن الخاص بكِ
@@ -13,18 +13,17 @@ TOKEN = "8337883589:AAF3KPvdj5XggUE60CnOo90cMzy2T0S6cuc"
 def main_menu_keyboard():
     keyboard = [
         [InlineKeyboardButton("📚 المحاضرات (المستويات)", callback_data="lectures")],
-        [InlineKeyboardButton("📢 قناة التلغرام", url="https://t.me/Areej_almoubarak")],
-        [InlineKeyboardButton("🎓 الكورسات", callback_data="courses")],
-        [InlineKeyboardButton("🤖 الذكاء الاصطناعي", callback_data="ai")],
-        [InlineKeyboardButton("📞 تواصل معنا", callback_data="contact")]
+        [InlineKeyboardButton("📢 قناة التلغرام الجديدة", url="https://t.me/+kL4uo25MCKoyY2I0")],
+        [InlineKeyboardButton("🟢 قناة الواتساب الرسمية", url="https://chat.whatsapp.com/D5LQhEqx2rZ9G5InsHSw5v?mode=gi_t")],
+        [InlineKeyboardButton("🎓 الكورسات التدريبية", callback_data="courses")],
+        [InlineKeyboardButton("📞 تواصل شخصي مع المهندسة", callback_data="contact")]
     ]
     return InlineKeyboardMarkup(keyboard)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "👋 أهلاً بكم في منصة المهندسة أريج المبارك التعليمية.\n\n"
-        "أنا هنا لمساعدتكم في الوصول للمحاضرات والكورسات البرمجية.\n"
-        "اختر ما تبحث عنه من الأزرار أدناه:",
+        "يمكنكم الوصول للمحاضرات، الانضمام لقنواتنا، أو التواصل معي مباشرة عبر الأزرار أدناه:",
         reply_markup=main_menu_keyboard()
     )
 
@@ -33,16 +32,15 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     data = query.data
 
-    # قسم المحاضرات والمستويات
+    # قسم المحاضرات
     if data == "lectures":
         keyboard = [
             [InlineKeyboardButton("المستوى الأول", callback_data="level1")],
-            [InlineKeyboardButton("بقية المستويات (قريباً)", callback_data="back")],
             [InlineKeyboardButton("🔙 رجوع", callback_data="back")]
         ]
         await query.edit_message_text("📚 اختر المستوى الدراسي:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    # روابط المواد المحددة
+    # روابط المواد (برمجة 1 ورياضيات 2)
     elif data == "level1":
         keyboard = [
             [InlineKeyboardButton("💻 برمجة 1", url="https://drive.google.com/drive/folders/1sr1h4Xa0dAj76RHjDHhraFy_DrYG5obu")],
@@ -51,24 +49,22 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
         await query.edit_message_text("📚 مواد المستوى الأول المتاحة حالياً:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    # قسم التواصل مع الأرقام السورية المحدثة
+    # قسم التواصل الشخصي المحدث
     elif data == "contact":
-        # روابط واتساب مباشرة للأرقام السورية التي زودتني بها
-        wa_link1 = "https://wa.me/963930011207"
-        wa_link2 = "https://wa.me/963996499901"
-        tg_link = "https://t.me/Areej_almoubarak"
-
         keyboard = [
-            [InlineKeyboardButton("💬 تلغرام: أريج المبارك", url=tg_link)],
-            [InlineKeyboardButton("🟢 واتساب (الرقم الأول)", url=wa_link1)],
-            [InlineKeyboardButton("🟢 واتساب (الرقم الثاني)", url=wa_link2)],
-            [InlineKeyboardButton("🔙 رجوع", callback_data="back")]
+            [InlineKeyboardButton("💬 تلغرام: @Areej_almoubarak", url="https://t.me/Areej_almoubarak")],
+            [InlineKeyboardButton("🟢 واتساب: 0930011207", url="https://wa.me/963930011207")],
+            [InlineKeyboardButton("🟢 واتساب: 0996499901", url="https://wa.me/963996499901")],
+            [InlineKeyboardButton("🔙 رجوع للقائمة الرئيسية", callback_data="back")]
         ]
-        await query.edit_message_text("📞 يسعدنا تواصلكم عبر الوسائل التالية:", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.edit_message_text(
+            "📞 يسعدني تواصلكم الشخصي للاستفسارات البرمجية والأكاديمية عبر:",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
 
-    elif data in ["courses", "ai"]:
+    elif data == "courses":
         keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="back")]]
-        await query.edit_message_text("🚧 هذا القسم قيد التطوير وسيتم تفعيله قريباً.", reply_markup=InlineKeyboardMarkup(keyboard))
+        await query.edit_message_text("🎓 قسم الكورسات قيد التجهيز، سيتم الإعلان عنه قريباً.", reply_markup=InlineKeyboardMarkup(keyboard))
 
     elif data == "back":
         await query.edit_message_text("القائمة الرئيسية:", reply_markup=main_menu_keyboard())
@@ -78,5 +74,5 @@ if __name__ == '__main__':
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(button))
     
-    print("Bot is updating and running...")
+    print("Bot is updating and running successfully...")
     application.run_polling()
