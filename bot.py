@@ -1,12 +1,19 @@
+import os
+import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
-import os
 
-TOKEN = os.getenv("T8337883589:AAGSNrZhtc8oW-o8A9SikB5FQ6S3N-5ipVo")
+# إعداد السجلات (Logs) لمتابعة أي أخطاء تظهر في Railway
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+
+# التوكن الخاص بكِ (تأكدي من تغييره لاحقاً للأمان)
+TOKEN = "8337883589:AAF3KPvdj5XggUE60CnOo90cMzy2T0S6cuc"
 
 # رسالة البداية
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     keyboard = [
         [InlineKeyboardButton("📚 المحاضرات", callback_data="lectures")],
         [InlineKeyboardButton("🎓 الكورسات", callback_data="courses")],
@@ -22,16 +29,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
-
+# معالجة الضغط على الأزرار
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     query = update.callback_query
     await query.answer()
     data = query.data
 
     # قائمة المحاضرات
     if data == "lectures":
-
         keyboard = [
             [InlineKeyboardButton("المستوى الأول", callback_data="level1")],
             [InlineKeyboardButton("المستوى الثاني", callback_data="level2")],
@@ -41,91 +46,60 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("📤 ساهم بمحاضرات المادة", callback_data="upload")],
             [InlineKeyboardButton("🔙 رجوع", callback_data="back")]
         ]
+        await query.edit_message_text("📚 اختر المستوى:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "📚 اختر المستوى:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
-    # المستوى الأول
+    # المستوى الأول (ملاحظة: الروابط يجب أن تبدأ بـ https://)
     elif data == "level1":
-
         keyboard = [
-            [InlineKeyboardButton("برمجة 1", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("برمجة 2", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("الرياضيات 1", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("الرياضيات 2", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("المحاسبة المالية 1", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("اساسيات الادارة", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("الحضارة العربية", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("اللغة الانكليزية 1", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("اللغة الانكليزية 2", url="PUT_LINK_HERE")],
-            [InlineKeyboardButton("اخلاقيات المهنة", url="PUT_LINK_HERE")],
+            [InlineKeyboardButton("برمجة 1", url="https://t.me/example")],
+            [InlineKeyboardButton("برمجة 2", url="https://t.me/example")],
+            [InlineKeyboardButton("الرياضيات 1", url="https://t.me/example")],
+            [InlineKeyboardButton("الرياضيات 2", url="https://t.me/example")],
+            [InlineKeyboardButton("المحاسبة المالية 1", url="https://t.me/example")],
+            [InlineKeyboardButton("اساسيات الادارة", url="https://t.me/example")],
+            [InlineKeyboardButton("الحضارة العربية", url="https://t.me/example")],
+            [InlineKeyboardButton("اللغة الانكليزية 1", url="https://t.me/example")],
+            [InlineKeyboardButton("اللغة الانكليزية 2", url="https://t.me/example")],
+            [InlineKeyboardButton("اخلاقيات المهنة", url="https://t.me/example")],
             [InlineKeyboardButton("🔙 رجوع", callback_data="lectures")]
         ]
+        await query.edit_message_text("📚 مواد المستوى الأول:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "📚 مواد المستوى الأول:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
-    # المستويات الأخرى
     elif data in ["level2", "level3", "level4", "level5"]:
+        keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="lectures")]]
+        await query.edit_message_text("📚 سيتم إضافة تفاصيل المواد خلال أسبوع إن شاء الله.", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "📚 سيتم إضافة تفاصيل المواد خلال أسبوع إن شاء الله."
-        )
-
-    # رفع المحاضرات
     elif data == "upload":
+        keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="lectures")]]
+        await query.edit_message_text("📤 إذا أردت المساهمة بمحاضرات الطلاب\n\nارفع الملفات هنا:\n(ضع رابط الرفع هنا)", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "📤 إذا أردت المساهمة بمحاضرات الطلاب\n\n"
-            "ارفع الملفات هنا:\n"
-            "ضع رابط Google Drive أو نموذج الرفع هنا"
-        )
-
-    # الكورسات
     elif data == "courses":
+        keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="back")]]
+        await query.edit_message_text("🎓 قسم الكورسات سيتم إضافته قريباً.", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "🎓 قسم الكورسات سيتم إضافته قريباً."
-        )
-
-    # الذكاء الاصطناعي
     elif data == "ai":
+        keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="back")]]
+        await query.edit_message_text("🤖 سيتم إضافة قسم لتعلم الذكاء الاصطناعي قريباً.", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "🤖 سيتم إضافة قسم لتعلم الذكاء الاصطناعي قريباً."
-        )
-
-    # التواصل
     elif data == "contact":
+        keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="back")]]
+        await query.edit_message_text("📞 للتواصل:\n(ضع هنا رابط تلغرام أو واتساب)", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "📞 للتواصل:\n"
-            "ضع هنا رابط تلغرام أو واتساب."
-        )
-
-    # رجوع
     elif data == "back":
-
         keyboard = [
             [InlineKeyboardButton("📚 المحاضرات", callback_data="lectures")],
             [InlineKeyboardButton("🎓 الكورسات", callback_data="courses")],
             [InlineKeyboardButton("🤖 الذكاء الاصطناعي", callback_data="ai")],
             [InlineKeyboardButton("📞 تواصل معنا", callback_data="contact")]
         ]
+        await query.edit_message_text("القائمة الرئيسية:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        await query.edit_message_text(
-            "القائمة الرئيسية:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
-
-
-app = ApplicationBuilder().token(TOKEN).build()
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CallbackQueryHandler(button))
-
-app.run_polling()
+# تشغيل البوت
+if __name__ == '__main__':
+    application = ApplicationBuilder().token(TOKEN).build()
+    
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(button))
+    
+    print("Bot is running...")
+    application.run_polling()
