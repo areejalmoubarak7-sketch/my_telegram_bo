@@ -7,7 +7,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandle
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # التوكن الخاص بكِ
-TOKEN = "8337883589:AAG7w3yJWDyawZ0nMPoDTwHyxslC8vHy9LA"
+TOKEN = "8337883589:AAGkLauWquB5wNUzH6vvqpmrF7WaT5kzWSs"
 
 # --- القائمة الرئيسية ---
 def main_menu_keyboard():
