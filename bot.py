@@ -1,54 +1,82 @@
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
-# 1. ضع التوكن الجديد هنا
-TOKEN = "8337883589:AAFlCa2c4WWybGET5KJEGkVBLsHK6l6qFc4"
+# 1. ضع التوكن الخاص بك هنا
+TOKEN = "8337883589:AAGS2-NfDFX8lhQLngWzygaCvjNWZ-Qln74"
 
-# 2. تحديث قائمة المواد والروابط الجديدة
+# 2. قائمة المواد المعتمدة (بعد حذف الشبكات ونظم التشغيل)
 LECTURES_DATA = {
     "📂 خوارزميات 1": "https://drive.google.com/drive/folders/15WH86GfNYOn0kq489y3sGkzNvJpIyWcX?usp=drive_link",
     "🔢 التحليل العددي": "https://drive.google.com/drive/folders/1eL-cRjjYDiY-c1oEG0dZQIjGTh3QiiBC?usp=drive_link",
     "🚀 خوارزميات متقدمة": "https://drive.google.com/drive/folders/1_v0DaeCcI7Ze_Scw4vBJYCf62Ak0a07-?usp=drive_link",
-    "☕ برمجة متقدمة (جافا)": "https://drive.google.com/drive/folders/1Owok6FJgYOkkY96iQN5ZGpX_Ptf78IAq?usp=drive_link"
+    "☕ برمجة متقدمة (جافا)": "https://drive.google.com/drive/folders/1Owok6FJgYOkkY96iQN5ZGpX_Ptf78IAq?usp=drive_link",
+    "📘 برمجة 1": "https://drive.google.com/drive/folders/1sr1h4Xa0dAj76RHjDHhraFy_DrYG5obu?usp=drive_link", # ضع رابط الدرايف الحقيقي هنا
+    "📐 رياضيات 2": "https://drive.google.com/drive/folders/1IFRKrR-gz99RhttfgxafL6cSaOKk7qTU?usp=drive_link"       # ضع رابط الدرايف الحقيقي هنا
 }
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # إنشاء أزرار المواد
+    # ترتيب الأزرار الجديد
     keyboard = [
         ["📂 خوارزميات 1", "🔢 التحليل العددي"],
-        ["🚀 خوارزميات متقدمة", "☕ برمجة متقدمة (جافا)"]
+        ["🚀 خوارزميات متقدمة", "☕ برمجة متقدمة (جافا)"],
+        ["📘 برمجة 1", "📐 رياضيات 2"],
+        ["🎓 الكورسات", "🟢 جروب الواتساب"],
+        ["👩‍🏫 تواصل مع المهندسة"],
+        ["🤖 بوت التواصل", "🛠️ بوت الإدارة"]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
-    # رسالة ترحيبية مع رابط القناة
+    # رسالة ترحيبية تشمل الروابط التي طلبتها
     welcome_text = (
-        "🎓 أهلاً بك في بوت المواد الجامعية ITE\n\n"
-        "يمكنك الحصول على روابط المحاضرات بالضغط على الأزرار أدناه.\n\n"
-        "📢 تابع آخر التحديثات على قناتنا:\n"
-        "https://t.me/ITEAcademic"
+        "🎓 **أهلاً بك في بوت محاضرات الشهباء**\n\n"
+        "هنا تجد كل ما يهمك من محاضرات وروابط تواصل:\n\n"
+        "📢 **قناتنا على تلغرام:** t.me/ITEAcademic\n"
+        "🤖 **رابط البوت:** https://t.me/ShahbaaLectures_bot\n"
+        "💬 **مجموعة الواتساب:** https://chat.whatsapp.com/D5LQhEqx2rZ9G5InsHSw5v\n\n"
+        "اختر المادة أو الخدمة من الأزرار أدناه 👇"
     )
     
-    await update.message.reply_text(welcome_text, reply_markup=reply_markup, disable_web_page_preview=True)
+    await update.message.reply_text(welcome_text, reply_markup=reply_markup, parse_mode='Markdown', disable_web_page_preview=True)
 
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
     
+    # 1. روابط المواد
     if user_text in LECTURES_DATA:
         url = LECTURES_DATA[user_text]
-        # إرسال الرابط مع زر "فتح الرابط" بشكل احترافي
         inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 فتح المجلد", url=url)]])
-        await update.message.reply_text(
-            f"✅ تفضل، رابط مجلد {user_text}:",
-            reply_markup=inline_kb
-        )
+        await update.message.reply_text(f"✅ مادة {user_text}:\nتفضل الرابط المطلوب:", reply_markup=inline_kb)
+
+    # 2. زر الواتساب (بالرابط الذي أرسلته)
+    elif user_text == "🟢 جروب الواتساب":
+        whatsapp_url = "https://chat.whatsapp.com/D5LQhEqx2rZ9G5InsHSw5v"
+        inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("الانضمام للواتساب", url=whatsapp_url)]])
+        await update.message.reply_text("تفضل رابط الانضمام لمجموعة الواتساب الخاصة بنا:", reply_markup=inline_kb)
+
+    # 3. الكورسات
+    elif user_text == "🎓 الكورسات":
+        await update.message.reply_text("📚 **الكورسات المتوفرة حالياً:**\n\n- كورس البرمجة\n- كورس الخوارزميات\n\nللتسجيل تواصل مع الإدارة.")
+
+    # 4. روابط التواصل
+    elif user_text == "👩‍🏫 تواصل مع المهندسة":
+        inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("ارسل رسالة", url="https://t.me/ITE_eng")]])
+        await update.message.reply_text("يمكنك التواصل مع المهندسة مباشرة من هنا:", reply_markup=inline_kb)
+
+    elif user_text == "🤖 بوت التواصل":
+        inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("فتح البوت", url="https://t.me/Contact_ITE_Bot")]])
+        await update.message.reply_text("بوت التواصل الرسمي:", reply_markup=inline_kb)
+
+    elif user_text == "🛠️ بوت الإدارة":
+        inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("فتح البوت", url="https://t.me/Admin_ITE_Bot")]])
+        await update.message.reply_text("بوت الإدارة للأمور التنظيمية:", reply_markup=inline_kb)
+
     else:
-        await update.message.reply_text("⚠️ يرجى اختيار مادة من الأزرار الظاهرة في الأسفل.")
+        await update.message.reply_text("⚠️ يرجى اختيار مادة أو خدمة من الأزرار الظاهرة.")
 
 if __name__ == '__main__':
     app = ApplicationBuilder().token(TOKEN).build()
-    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_messages))
     
-    print("✅ البوت شغال الآن مع المواد الجديدة...")
+    print("🚀 البوت شغال الآن بجميع التحديثات المطلوبة...")
     app.run_polling()
