@@ -2,7 +2,7 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKe
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
 # 1. ضع التوكن الخاص بك هنا
-TOKEN = "8337883589:AAGS2-NfDFX8lhQLngWzygaCvjNWZ-Qln74"
+TOKEN = "8337883589:AAECUmOSR1xYi1KKZV1FE4F6wsfZsjZv-2Y"
 
 # 2. قائمة المواد المعتمدة (بعد حذف الشبكات ونظم التشغيل)
 LECTURES_DATA = {
