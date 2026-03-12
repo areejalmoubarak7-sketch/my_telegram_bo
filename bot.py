@@ -1,78 +1,54 @@
-import os
-import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
-# إعداد السجلات لمتابعة البوت
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+# 1. ضع التوكن الجديد هنا
+TOKEN = "Y8337883589:AAGkLauWquB5wNUzH6vvqpmrF7WaT5kzWSs"
 
-# التوكن الخاص بكِ
-TOKEN = "8337883589:AAGkLauWquB5wNUzH6vvqpmrF7WaT5kzWSs"
-
-# --- القائمة الرئيسية ---
-def main_menu_keyboard():
-    keyboard = [
-        [InlineKeyboardButton("📚 المحاضرات (المستويات)", callback_data="lectures")],
-        [InlineKeyboardButton("📢 قناة التلغرام الجديدة", url="https://t.me/+kL4uo25MCKoyY2I0")],
-        [InlineKeyboardButton("🟢 قناة الواتساب الرسمية", url="https://chat.whatsapp.com/D5LQhEqx2rZ9G5InsHSw5v?mode=gi_t")],
-        [InlineKeyboardButton("🎓 الكورسات التدريبية", callback_data="courses")],
-        [InlineKeyboardButton("📞 تواصل شخصي مع المهندسة", callback_data="contact")]
-    ]
-    return InlineKeyboardMarkup(keyboard)
+# 2. تحديث قائمة المواد والروابط الجديدة
+LECTURES_DATA = {
+    "📂 خوارزميات 1": "https://drive.google.com/drive/folders/15WH86GfNYOn0kq489y3sGkzNvJpIyWcX?usp=drive_link",
+    "🔢 التحليل العددي": "https://drive.google.com/drive/folders/1eL-cRjjYDiY-c1oEG0dZQIjGTh3QiiBC?usp=drive_link",
+    "🚀 خوارزميات متقدمة": "https://drive.google.com/drive/folders/1_v0DaeCcI7Ze_Scw4vBJYCf62Ak0a07-?usp=drive_link",
+    "☕ برمجة متقدمة (جافا)": "https://drive.google.com/drive/folders/1Owok6FJgYOkkY96iQN5ZGpX_Ptf78IAq?usp=drive_link"
+}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 أهلاً بكم في منصة المهندسة أريج المبارك التعليمية.\n\n"
-        "يمكنكم الوصول للمحاضرات، الانضمام لقنواتنا، أو التواصل معي مباشرة عبر الأزرار أدناه:",
-        reply_markup=main_menu_keyboard()
+    # إنشاء أزرار المواد
+    keyboard = [
+        ["📂 خوارزميات 1", "🔢 التحليل العددي"],
+        ["🚀 خوارزميات متقدمة", "☕ برمجة متقدمة (جافا)"]
+    ]
+    reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    
+    # رسالة ترحيبية مع رابط القناة
+    welcome_text = (
+        "🎓 أهلاً بك في بوت المواد الجامعية ITE\n\n"
+        "يمكنك الحصول على روابط المحاضرات بالضغط على الأزرار أدناه.\n\n"
+        "📢 تابع آخر التحديثات على قناتنا:\n"
+        "https://t.me/ITEAcademic"
     )
+    
+    await update.message.reply_text(welcome_text, reply_markup=reply_markup, disable_web_page_preview=True)
 
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    data = query.data
-
-    # قسم المحاضرات
-    if data == "lectures":
-        keyboard = [
-            [InlineKeyboardButton("المستوى الأول", callback_data="level1")],
-            [InlineKeyboardButton("🔙 رجوع", callback_data="back")]
-        ]
-        await query.edit_message_text("📚 اختر المستوى الدراسي:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-    # روابط المواد (برمجة 1 ورياضيات 2)
-    elif data == "level1":
-        keyboard = [
-            [InlineKeyboardButton("💻 برمجة 1", url="https://drive.google.com/drive/folders/1sr1h4Xa0dAj76RHjDHhraFy_DrYG5obu")],
-            [InlineKeyboardButton("📐 الرياضيات 2", url="https://drive.google.com/drive/folders/1IFRKrR-gz99RhttfgxafL6cSaOKk7qTU")],
-            [InlineKeyboardButton("🔙 رجوع", callback_data="lectures")]
-        ]
-        await query.edit_message_text("📚 مواد المستوى الأول المتاحة حالياً:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-    # قسم التواصل الشخصي المحدث
-    elif data == "contact":
-        keyboard = [
-            [InlineKeyboardButton("💬 تلغرام: @Areej_almoubarak", url="https://t.me/Areej_almoubarak")],
-            [InlineKeyboardButton("🟢 واتساب: 0930011207", url="https://wa.me/963930011207")],
-            [InlineKeyboardButton("🟢 واتساب: 0996499901", url="https://wa.me/963996499901")],
-            [InlineKeyboardButton("🔙 رجوع للقائمة الرئيسية", callback_data="back")]
-        ]
-        await query.edit_message_text(
-            "📞 يسعدني تواصلكم الشخصي للاستفسارات البرمجية والأكاديمية عبر:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_text = update.message.text
+    
+    if user_text in LECTURES_DATA:
+        url = LECTURES_DATA[user_text]
+        # إرسال الرابط مع زر "فتح الرابط" بشكل احترافي
+        inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 فتح المجلد", url=url)]])
+        await update.message.reply_text(
+            f"✅ تفضل، رابط مجلد {user_text}:",
+            reply_markup=inline_kb
         )
-
-    elif data == "courses":
-        keyboard = [[InlineKeyboardButton("🔙 رجوع", callback_data="back")]]
-        await query.edit_message_text("🎓 قسم الكورسات قيد التجهيز، سيتم الإعلان عنه قريباً.", reply_markup=InlineKeyboardMarkup(keyboard))
-
-    elif data == "back":
-        await query.edit_message_text("القائمة الرئيسية:", reply_markup=main_menu_keyboard())
+    else:
+        await update.message.reply_text("⚠️ يرجى اختيار مادة من الأزرار الظاهرة في الأسفل.")
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token(TOKEN).build()
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CallbackQueryHandler(button))
+    app = ApplicationBuilder().token(TOKEN).build()
     
-    print("Bot is updating and running successfully...")
-    application.run_polling()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_messages))
+    
+    print("✅ البوت شغال الآن مع المواد الجديدة...")
+    app.run_polling()
