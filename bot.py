@@ -2,7 +2,7 @@ from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKe
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
 # 1. ضعي التوكن الجديد هنا بين علامتي التنصيص
-TOKEN = "8337883589:AAH-vb6SbyEV6l8TCc32LgfiVF9Bo1wliW0"
+TOKEN = "8337883589:AAFlUbY_q3WqDcD9OUNDdX949AwMAdePgeU"
 
 # 2. قائمة المواد والروابط المحدثة
 LECTURES_DATA = {
