@@ -1,21 +1,21 @@
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
-# 1. ضع التوكن الخاص بك هنا
-TOKEN = "8337883589:AAG4OzPSb4e0bTe9pPXbSCWyG3XygiOpkas"
+# 1. ضعي التوكن الجديد هنا بين علامتي التنصيص
+TOKEN = "8337883589:AAH-vb6SbyEV6l8TCc32LgfiVF9Bo1wliW0"
 
-# 2. قائمة المواد المعتمدة (بعد حذف الشبكات ونظم التشغيل)
+# 2. قائمة المواد والروابط المحدثة
 LECTURES_DATA = {
     "📂 خوارزميات 1": "https://drive.google.com/drive/folders/15WH86GfNYOn0kq489y3sGkzNvJpIyWcX?usp=drive_link",
     "🔢 التحليل العددي": "https://drive.google.com/drive/folders/1eL-cRjjYDiY-c1oEG0dZQIjGTh3QiiBC?usp=drive_link",
     "🚀 خوارزميات متقدمة": "https://drive.google.com/drive/folders/1_v0DaeCcI7Ze_Scw4vBJYCf62Ak0a07-?usp=drive_link",
     "☕ برمجة متقدمة (جافا)": "https://drive.google.com/drive/folders/1Owok6FJgYOkkY96iQN5ZGpX_Ptf78IAq?usp=drive_link",
-    "📘 برمجة 1": "https://drive.google.com/drive/folders/1sr1h4Xa0dAj76RHjDHhraFy_DrYG5obu?usp=drive_link", # ضع رابط الدرايف الحقيقي هنا
-    "📐 رياضيات 2": "https://drive.google.com/drive/folders/1IFRKrR-gz99RhttfgxafL6cSaOKk7qTU?usp=drive_link"       # ضع رابط الدرايف الحقيقي هنا
+    "📘 برمجة 1": "https://drive.google.com/drive/folders/15WH86GfNYOn0kq489y3sGkzNvJpIyWcX?usp=drive_link", # تأكدي من تحديث الرابط
+    "📐 رياضيات 2": "https://drive.google.com/drive/folders/1IFRKrR-gz99RhttfgxafL6cSaOKk7qTU?usp=drive_link" # تأكدي من تحديث الرابط
 }
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # ترتيب الأزرار الجديد
+    # ترتيب الأزرار في القائمة (إلغاء المستويات)
     keyboard = [
         ["📂 خوارزميات 1", "🔢 التحليل العددي"],
         ["🚀 خوارزميات متقدمة", "☕ برمجة متقدمة (جافا)"],
@@ -26,7 +26,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
     
-    # رسالة ترحيبية تشمل الروابط التي طلبتها
+    # الرسالة الترحيبية الشاملة
     welcome_text = (
         "🎓 **أهلاً بك في بوت محاضرات الشهباء**\n\n"
         "هنا تجد كل ما يهمك من محاضرات وروابط تواصل:\n\n"
@@ -41,23 +41,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
     
-    # 1. روابط المواد
+    # معالجة روابط المواد
     if user_text in LECTURES_DATA:
         url = LECTURES_DATA[user_text]
         inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("🔗 فتح المجلد", url=url)]])
         await update.message.reply_text(f"✅ مادة {user_text}:\nتفضل الرابط المطلوب:", reply_markup=inline_kb)
 
-    # 2. زر الواتساب (بالرابط الذي أرسلته)
+    # زر الواتساب
     elif user_text == "🟢 جروب الواتساب":
         whatsapp_url = "https://chat.whatsapp.com/D5LQhEqx2rZ9G5InsHSw5v"
         inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("الانضمام للواتساب", url=whatsapp_url)]])
         await update.message.reply_text("تفضل رابط الانضمام لمجموعة الواتساب الخاصة بنا:", reply_markup=inline_kb)
 
-    # 3. الكورسات
+    # الكورسات
     elif user_text == "🎓 الكورسات":
         await update.message.reply_text("📚 **الكورسات المتوفرة حالياً:**\n\n- كورس البرمجة\n- كورس الخوارزميات\n\nللتسجيل تواصل مع الإدارة.")
 
-    # 4. روابط التواصل
+    # روابط التواصل (اليوزرات القديمة)
     elif user_text == "👩‍🏫 تواصل مع المهندسة":
         inline_kb = InlineKeyboardMarkup([[InlineKeyboardButton("ارسل رسالة", url="https://t.me/ITE_eng")]])
         await update.message.reply_text("يمكنك التواصل مع المهندسة مباشرة من هنا:", reply_markup=inline_kb)
@@ -74,9 +74,11 @@ async def handle_messages(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("⚠️ يرجى اختيار مادة أو خدمة من الأزرار الظاهرة.")
 
 if __name__ == '__main__':
+    # بناء التطبيق وتشغيل البوت
     app = ApplicationBuilder().token(TOKEN).build()
+    
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_messages))
     
-    print("🚀 البوت شغال الآن بجميع التحديثات المطلوبة...")
+    print("🚀 البوت جاهز للعمل... لا تشغليه على جهازك إذا قمتِ برفعه للسيرفر!")
     app.run_polling()
